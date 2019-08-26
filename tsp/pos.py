@@ -2,9 +2,10 @@ import random, copy
 import numpy as np
 
 import matplotlib.pyplot as plt
-def plot_learning(costs):
-    plt.plot(range(len(costs)), costs)
-    plt.show()
+def plot_learning(scores):
+    _, _ = plt.subplots(1, 1)
+    plt.plot(range(len(scores)), scores)
+    _, _ = plt.subplots(1, 1)
 
 from tsp import tsp_map, mutate, cost, plot, ind
 
@@ -21,7 +22,6 @@ class Momentum:
         self.vt = self.vt * self.momentum + self.lr * dist
         return 1 + int(self.vt / self.lr)
 
-COUNT = 100
 ELITE = 3
 
 class ParticleLayer:
@@ -58,7 +58,7 @@ class ParticleLayer:
 
         self._best_update()
 
-    def crossover(self, cities, particle, a):
+    def pclone(self, cities, particle, a):
         target = self.path[a]
         b = particle.maping[target]
 #        assert b == list(particle.path).index(target)
@@ -75,7 +75,7 @@ class ParticleLayer:
         self.best = copy.copy(self)
 
 class SwarmNetwork:
-    def __init__(self, n_cities, scale, anealing_degree, lrp, lrg, momentum):
+    def __init__(self, p_count, n_cities, scale, anealing_degree, lrp, lrg, momentum):
         self.cities = tsp_map(n_cities, scale)
 
         self.max_error_degree = n_cities# * np.log2(n_cities)
@@ -83,7 +83,7 @@ class SwarmNetwork:
 
         self.particles = [
                 ParticleLayer(self.cities, Momentum(1e-1, .999, momentum), temperature
-                    ) for _ in range(COUNT)]
+                    ) for _ in range(p_count)]
 
         self.temperature = np.logspace(0, 5, 2 * temperature)[:temperature]
         self.t_i = [len(self.temperature)] * len(self.particles)
@@ -138,17 +138,17 @@ class SwarmNetwork:
                 idx = random.randint(0, len(p.path)-1)
                 if self.lrg > random.random():
                     if self.particles[0].best.path[idx] != p.path[idx]:
-#                        p.crossover(self.cities, self.particles[random.randint(0, i // 4)], idx)
-                        p.crossover(self.cities, self.particles[random.randint(0, ELITE)], idx)
+                        p.pclone(self.cities, self.particles[random.randint(0, i // 4)], idx)
+#                        p.pclone(self.cities, self.particles[random.randint(0, ELITE)], idx)
 
                 idx = random.randint(0, len(p.path)-1)
                 if self.lrp > random.random():
                     if p.best.path[idx] != p.path[idx]:
-                        p.crossover(self.cities, p.best, idx)
+                        p.pclone(self.cities, p.best, idx)
 
-                exporation = 0 == random.randint(0, error_degree)
-                dist_proportional = error < random.random() * 4
-                if exporation or dist_proportional:
+                exporation = 1 > random.randint(0, error_degree)
+                dist_proportional = 1 * error < random.random()
+                if exporation and dist_proportional:
                     continue # best we want less to improvize
 
                 src = mutate(p.path, degree=2)
@@ -167,7 +167,8 @@ class SwarmNetwork:
         self.particles.sort(key=lambda p: p.error)
         plot(swarm.cities, self.particles[0].best.path)
 
-swarm = SwarmNetwork(24, 1000, 50, lrp=3e-1, lrg=7e-1, momentum=.6)
-losses = swarm.fit(500)
-swarm.plot()
+swarm = SwarmNetwork(10, 24, 1000, 50, lrp=3e-1, lrg=7e-1, momentum=.6)
+losses = swarm.fit(300)
+
 plot_learning(losses)
+swarm.plot()

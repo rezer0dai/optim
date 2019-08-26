@@ -8,9 +8,10 @@ import random
 import numpy as np
 
 import matplotlib.pyplot as plt
-def plot_learning(costs):
-    plt.plot(range(len(costs)), costs)
-    plt.show()
+def plot_learning(scores):
+    _, plane = plt.subplots(1, 1)
+    plane.plot(range(len(scores)), scores)
+    _, _ = plt.subplots(1, 1)
 
 from tsp import tsp_map, mutate, cost, plot
 
@@ -59,9 +60,24 @@ def mutation(cities, population, a):
 #    assert cost_m.round() == cost_w.round()
     return pop_m, cost_m
 
-def fittest(elite, population, fitness):
-    a = elite[random.randint(0, len(elite) - 1)]
-    return population[a], fitness[a]
+def pclone(cities, population, a, b):
+    for _ in range(len(cities)*2):
+        a_i = random.randint(0, len(cities)-1)
+        if population[a][a_i] == population[b][a_i]:
+            continue
+        pop_c = population[a].copy()
+        target = pop_c[a_i]
+        b_i = list(population[b]).index(target)
+        if abs(a_i - b_i) < 2 or abs(a_i - b_i) == len(pop_c) - 1:
+            continue
+        src, dst = [a_i, b_i], [b_i, a_i]
+        cost_src = cost(cities, pop_c, src, src)
+        cost_dst = cost(cities, pop_c, src, dst)
+
+        cost_c = fitness[a] - (cost_src - cost_dst)
+        pop_c[src] = pop_c[dst]
+        return pop_c, cost_c
+    return None, None
 
 def evaluate(fitness, a):
     score = 0
@@ -84,10 +100,12 @@ for _ in range(200):
         a, b = tournament(fitness)
         if 1 > op:
             pop_c, fit_c = mutation(cities, population, a)
+        elif 2 > op:
+            pop_c, fit_c = pclone(cities, population, a, b)
         elif 3 > op:
             pop_c, fit_c = crossover(cities, population, a, b)
-        elif 3 == op:
-            pop_c, fit_c = fittest(population, fitness)
+        if pop_c is None:
+            continue
         fitness.append(fit_c)
         population.append(pop_c)
 
@@ -100,5 +118,5 @@ for _ in range(200):
     fitness = [ fitness[i] for i in evolution ]
     population = [ population[i] for i in evolution ]
 
-plot(cities, population[np.argsort(fitness)[0]])
 plot_learning(scores)
+plot(cities, population[np.argsort(fitness)[0]])
