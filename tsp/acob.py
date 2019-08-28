@@ -13,13 +13,13 @@ def plot_learning(scores):
 
 from tsp import tsp_map, plot, cost
 
-DEGREE_OF_STEP = .3#9#
-COUNT = 10
-EVAPORATION_POOL = COUNT * 12
-ELITE_POOL = COUNT * 6
+DEGREE_OF_STEP = .4 # similiar to learning rate, but we dont want to learn fast as noisy and counterproductive
+COUNT = 10 # num of ants
+EVAPORATION_POOL = COUNT * 12 # archive of trails ( pheromones )
+ELITE_POOL = COUNT * 6 # top trails we want to converge
 
-VAR_CERTAINITY = COUNT * 2.5
-C_HEUR = 2.5
+VAR_CERTAINITY = COUNT * 2.5 # heuristic when model is learning / has converged
+C_HEUR = 5. # it is depended on DEGREE_OF_STEP
 
 cities = tsp_map(24, 1000)
 
@@ -31,10 +31,8 @@ neighbours = np.vstack([ d.argsort() for i, d in enumerate(dist) ])
 diffs = np.vstack([ n.argsort() for i, n in enumerate(neighbours) ])
 
 def random_draw(cities, mu, sigma):
-    i = int(np.random.normal(int(mu), sigma))
-    if i not in range(0, len(cities)):
-        return random.randint(0, len(cities) - 1)
-    return i
+    i = int(abs(np.random.normal(0, sigma)))
+    return neighbours[int(mu), int(i)]
 
 def action(cities, visited, mu, sigma):
     if not len(visited):
@@ -61,7 +59,7 @@ def action(cities, visited, mu, sigma):
     assert int(i) not in visited
     return i
 
-# perf overkill method how do it, but just for experimenting and carity of code
+# perf overkill method how is done here, but just for experimenting and clarity of idea
 def evaluate(trails, total_cost):
     newest = list(range(len(trails)-COUNT, len(trails)))
     elites = list(total_cost[:-COUNT].argsort()[:COUNT])
@@ -88,7 +86,10 @@ def error(trails, neighbours, i, mu):
         diffs[int(mu), int(idx)] for idx in trails[:ELITE_POOL, len(visited)] ])
 #    for idx in trails[:ELITE_POOL, len(visited)]:
 #        assert diffs[int(mu), int(idx)] == list(neighbours[int(mu)]).index(int(idx))
-    return sigma.sum() / (ELITE_POOL - 1)
+
+    # heuristic, if 2 possible soutions we dont want to oscilate
+    sigma.sort()
+    return sigma[1:len(sigma)//2+1].mean()
 
 scores = []
 trails = np.vstack([
@@ -126,7 +127,6 @@ for i in range(200):# * EVAPORATION_POOL // COUNT):
         total_cost[EVAPORATION_POOL + c] = score
 
     if var < VAR_CERTAINITY:
-        print("early stop: MODEL CONVERGED")
         break # heur :: model seems certain enough
 
     scores.append(np.mean(total_cost[EVAPORATION_POOL:]))
@@ -137,6 +137,4 @@ for i in range(200):# * EVAPORATION_POOL // COUNT):
 [print("-->", s) for s in stats]
 plot_learning(scores)
 plot(cities, [int(t) for t in trails[0]]) # best
-plot(cities, [int(t) for t in trails[COUNT]]) # best
-#plot(cities, [int(t) for t in trails[ELITE_POOL]]) # worst from best
-#plot(cities, [int(t) for t in trails[EVAPORATION_POOL-1]]) # worst passive
+plot(cities, [int(t) for t in trails[COUNT]]) # currently explored
