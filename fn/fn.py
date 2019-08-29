@@ -28,8 +28,8 @@ def scale(path, degree=1):
             np.arange(len(path)),
             random.randint(1, degree),
             replace=False)
-    noise = np.random.randn(len(idx))
-#    noise = np.random.uniform(0, 1, len(idx)) # this will unify ELITE vs FAMILY cost losses direction, but fails to converge
+#    noise = np.random.randn(len(idx)) # cause big differencies in evolution line ~ family ~ obviousely as changing sign drastically
+    noise = np.random.uniform(0, 1, len(idx)) # this will unify ELITE vs FAMILY cost losses direction, but fails to converge
 
     path[idx] = path[idx] * noise
     cost_m = cost(path)

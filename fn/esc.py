@@ -54,7 +54,7 @@ for _ in range(50):
         a, b = tournament(fitness)
         if 1 > op:
             pop_c, fit_c = mutation(population[a], N_VARS)
-        if 2 > op:
+        elif 2 > op:
             pop_c, fit_c = scale(population[a], N_VARS)
         elif 3 > op:
             pop_c, fit_c = pclone(population, a, b)
@@ -81,7 +81,7 @@ plt.xlabel("#training steps")
 family = mpatches.Patch(color="red", label="family losses")
 fitest = mpatches.Patch(color="green", label="fittest losses")
 plt.legend(handles=[family, fitest])
-plt.plot(range(len(scores_family)), max(scores_fitest) + np.asarray(scores_family) / 10., color="red")
-#plt.plot(range(len(scores_family)), scores_family, color="red")
+#plt.plot(range(len(scores_family)), max(scores_fitest) + np.asarray(scores_family) / 10., color="red")
+plt.plot(range(len(scores_family)), scores_family, color="red")
 plt.plot(range(len(scores_fitest)), scores_fitest, color="green")
 plt.show()
