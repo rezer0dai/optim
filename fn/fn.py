@@ -8,7 +8,7 @@ def func(w):
     return (w**2)#.sum()
 
 def cost(w):
-    return (np.abs(func(w) - np.arange(len(w)))**2).sum()
+    return (np.abs(func(w) - np.arange(len(w)))**2).sum(-1)
 
 def mutation(path, degree=1):
     path = path.copy()

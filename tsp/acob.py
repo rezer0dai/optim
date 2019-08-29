@@ -30,13 +30,13 @@ dist = np.array([
 neighbours = np.vstack([ d.argsort() for i, d in enumerate(dist) ])
 diffs = np.vstack([ n.argsort() for i, n in enumerate(neighbours) ])
 
-def random_draw(cities, mu, sigma):
+def random_draw(mu, sigma):
     i = int(abs(np.random.normal(0, sigma)))
     return neighbours[int(mu), int(i)]
 
-def action(cities, visited, mu, sigma):
+def action(visited, mu, sigma):
     if not len(visited):
-        return random_draw(cities, mu, sigma)
+        return random_draw(mu, sigma)
 
     locations = neighbours[int(mu)]
     dists = dist[visited[-1], locations]
@@ -114,7 +114,7 @@ for i in range(200):# * EVAPORATION_POOL // COUNT):
             # not actually same as learning rate,
             # therefore degree of how fierce we want to follow pheromone paths
             sigma = DEGREE_OF_STEP * error(trails, neighbours, len(visited), mu)
-            mu_ex = action(cities, visited, mu, sigma)
+            mu_ex = action(visited, mu, sigma)
 
             var += sigma
             stats.append([mu_ex, mu, sigma, len(visited)])

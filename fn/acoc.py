@@ -42,7 +42,7 @@ def evaluate(trails, total_cost):
     return trails[idx], total_cost[idx]
 
 def error(trails, i, mu):
-    sigma = np.abs(mu - trails[:ELITE_POOL, len(visited)])
+    sigma = np.abs(mu - trails[:ELITE_POOL, i])
     # heuristic, if 2 possible soutions we dont want to oscilate
     sigma.sort()
     return sigma[1:len(sigma)//2+1].mean()
