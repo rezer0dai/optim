@@ -1,3 +1,4 @@
+import random
 import numpy as np
 
 N_VARS = 10
@@ -8,3 +9,28 @@ def func(w):
 
 def cost(w):
     return (np.abs(func(w) - np.arange(len(w)))**2).sum()
+
+def mutation(path, degree=1):
+    path = path.copy()
+    idx = np.random.choice(
+            np.arange(len(path)),
+            random.randint(1, degree),
+            replace=False)
+    noise = np.random.randn(len(idx))
+
+    path[idx] = path[idx] + noise
+    cost_m = cost(path)
+    return path, cost_m
+
+def scale(path, degree=1):
+    path = path.copy()
+    idx = np.random.choice(
+            np.arange(len(path)),
+            random.randint(1, degree),
+            replace=False)
+    noise = np.random.randn(len(idx))
+#    noise = np.random.uniform(0, 1, len(idx)) # this will unify ELITE vs FAMILY cost losses direction, but fails to converge
+
+    path[idx] = path[idx] * noise
+    cost_m = cost(path)
+    return path, cost_m
