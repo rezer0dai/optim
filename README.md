@@ -46,7 +46,7 @@ intuitive idea in continuous problems | harder to comprehend for discrete ones
 
 pros | cons
 --- | ---
-fast | sample not so eficient
+fast and exploratory | sample not so eficient
 approximating gradient wrt noise not input | multilayered seems harder to converge
 systematic updates in parameters space | not best for optimization in any domain, but should be quite efficient in RL settings ( policy optimizaiton )
 
