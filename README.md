@@ -7,7 +7,7 @@
   - in TSP is one of the key to swap(src, dst, i) only one city instead of whole sequence of cities ( gene )
   - tournament for ES strategies is important priority randomization for choosing what to evolve from population
 
-pos | cons
+pros | cons
 --- | ---
 usually it works | usually it works
 should be number 1 to try | not always optimal
@@ -20,7 +20,7 @@ easy to implement and define operations | slow in big domains
   - while idea is quite descriptive in discrete domain, it is very different from continous spaces implementation and quite counter intuitive :
     - [discrete implementation](https://github.com/rezer0dai/optim/blob/master/tsp/aco.py)  for TSP, [continous implementation](https://github.com/rezer0dai/optim/blob/master/tsp/acob.py)  for TSP, [continous implementation](https://github.com/rezer0dai/optim/blob/master/fn/acoc.py)  for function approximation
 
-pos | cons
+pros | cons
 --- | ---
 appears to works quite nicely | performance overhead to looking for sigma + draw from distribution
 tabular cases (TSP) quite efficient | convergence is based on keeping well balance archive, but usually requires add heuristic as part of pheromones scent
@@ -32,7 +32,7 @@ in continuous cases highly depends on archiving technique which can be tuned as 
   - easy to find local minima and never goes out, thats why some sort of mutation should be used
   - mutation i use is simulated annealing, though only in TSP discrete domain, as in continous w - cog_importance * error * rand will give use mutation around w by default
 
-pos | cons
+pros | cons
 --- | ---
 potent methodology, reassemble backprop  | lots of hyperparametrs to tune
 fast and systematic convergence | easy to converge to local minima
@@ -44,7 +44,7 @@ intuitive idea in continuous problems | harder to comprehend for discrete ones
   - sigma need to be multiplied and divided separately due to matrix operations
   - nice connection / interpolation between : ANN - NES - BNN - NoisyNetworks
 
-pos | cons
+pros | cons
 --- | ---
 fast | sample not so eficient
 approximating gradient wrt noise not input | multilayered seems harder to converge
@@ -54,7 +54,7 @@ systematic updates in parameters space | not best for optimization in any domain
 **SA** ( simulated annealing )
   - division by temperature is inside np.exp , easy to omit that :) !! np.exp((c(old)-c(new))/temp)
 
-pos | cons
+pros | cons
 --- | ---
 guaranted to converge given enough samples | sample uneficient
 systematic approach to jump out from local minima | only mutation technique used
